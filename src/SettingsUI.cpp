@@ -62,6 +62,28 @@ void WriteInt(const char* key, int value) {
   configuration.Write();
 }
 
+void WriteResolution(float value) {
+  auto& configuration = getConfig();
+  auto& json = configuration.config;
+  const int height = std::clamp(
+      static_cast<int>(std::lround(value / 8.0f)) * 8, 360, 1080);
+  const int width = std::clamp(
+      static_cast<int>(std::lround(height * (16.0f / 9.0f) / 16.0f)) * 16,
+      640, 1920);
+
+  if (json.HasMember("width")) {
+    json["width"].SetInt(width);
+  } else {
+    json.AddMember("width", width, json.GetAllocator());
+  }
+  if (json.HasMember("height")) {
+    json["height"].SetInt(height);
+  } else {
+    json.AddMember("height", height, json.GetAllocator());
+  }
+  configuration.Write();
+}
+
 void WriteFloat(const char* key, float value) {
   auto& configuration = getConfig();
   auto& json = configuration.config;
@@ -87,6 +109,9 @@ void DidActivate(HMUI::ViewController* self, bool firstActivation,
       3.2f);
   BSML::Lite::CreateText(parent,
                          "USB/OBS: http://127.0.0.1:5353/", 3.0f);
+  BSML::Lite::CreateText(
+      parent, "Lower resolution reduces Quest load; OBS scales it on Mac",
+      2.8f);
   BSML::Lite::CreateToggle(parent, "Enable QuestCam", ReadBool("enabled", true),
                            [](bool value) { WriteBool("enabled", value); });
   BSML::Lite::CreateToggle(parent, "Stream game audio",
@@ -118,13 +143,9 @@ void DidActivate(HMUI::ViewController* self, bool firstActivation,
         WriteInt("jpegQuality", static_cast<int>(std::lround(value)));
       });
   BSML::Lite::CreateSliderSetting(
-      parent, "Width", 16.0f, static_cast<float>(ReadInt("width", 960)),
-      640.0f, 1920.0f,
-      [](float value) { WriteInt("width", static_cast<int>(std::lround(value))); });
-  BSML::Lite::CreateSliderSetting(
-      parent, "Height", 8.0f, static_cast<float>(ReadInt("height", 540)),
-      360.0f, 1080.0f,
-      [](float value) { WriteInt("height", static_cast<int>(std::lround(value))); });
+      parent, "Resolution (16:9 height)", 8.0f,
+      static_cast<float>(ReadInt("height", 540)), 360.0f, 1080.0f,
+      [](float value) { WriteResolution(value); });
 }
 
 }  // namespace

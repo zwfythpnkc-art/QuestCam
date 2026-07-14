@@ -220,6 +220,11 @@ void FrameServer::ServeAudio(int client) {
   }
 
   uint64_t next;
+  // Keep the WAV response alive even when Unity supplies no samples during a
+  // scene transition. Without this, OBS can interpret a quiet two-second gap
+  // as the end of the live Media Source and permanently stop its audio.
+  const std::vector<int16_t> silence(
+      static_cast<size_t>(sampleRate_ * channels_ / 50), 0);
   {
     std::lock_guard lock(audioMutex_);
     next = nextAudioSequence_;
@@ -228,13 +233,18 @@ void FrameServer::ServeAudio(int client) {
     std::vector<std::shared_ptr<const std::vector<int16_t>>> chunks;
     {
       std::unique_lock lock(audioMutex_);
-      audioReady_.wait_for(lock, std::chrono::seconds(2),
+      audioReady_.wait_for(lock, std::chrono::milliseconds(20),
                            [&] { return !running_ || nextAudioSequence_ > next; });
       if (!running_) break;
       if (next < firstAudioSequence_) next = firstAudioSequence_;
       for (; next < nextAudioSequence_; ++next) {
         chunks.push_back(audioChunks_[static_cast<size_t>(next - firstAudioSequence_)]);
       }
+    }
+    if (chunks.empty() &&
+        !SendAll(client, silence.data(), silence.size() * sizeof(int16_t))) {
+      --audioClients_;
+      return;
     }
     for (const auto& chunk : chunks) {
       if (!SendAll(client, chunk->data(), chunk->size() * sizeof(int16_t))) {

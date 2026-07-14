@@ -1,4 +1,4 @@
-# QuestCam 0.3.6
+# QuestCam 0.3.7
 
 QuestCam is a spectator-camera and OBS streaming mod for **Beat Saber
 1.40.8_7379 on Meta Quest**, designed for Quest 3S and OBS on macOS.
@@ -17,7 +17,10 @@ This is a beta build. It compiles and packages successfully, but the streaming
 path still needs validation on a physical Quest 3S. The default 960x540 at 15
 FPS is designed to reduce gameplay stutter.
 
-Version 0.3.6 raises the FOV control to 170 degrees and the stream frame-rate
+Version 0.3.7 adds one 16:9 resolution slider (360p–1080p) and continuously
+sends silent audio during Beat Saber scene gaps so OBS does not stop the audio
+after two seconds. Use a lower QuestCam resolution and let OBS upscale on the
+Mac for less headset load. Version 0.3.6 raises the FOV control to 170 degrees and the stream frame-rate
 control to 60 FPS. 60 FPS is optional because it substantially increases Quest
 CPU/GPU load; 960x540 is recommended when using it. Version 0.3.5 renders Wide + Smooth through Beat Saber's real effects camera,
 adds explicit scene-change rebuilding, and includes a stalled-frame watchdog.
@@ -116,7 +119,10 @@ Default configuration:
 }
 ```
 
-Higher JPEG quality and frame rate increase CPU use. Leave `wideSmoothMode`
+Higher resolution, JPEG quality, and frame rate increase Quest CPU/GPU use.
+For Mac-side scaling, choose 360p or 540p in QuestCam and set OBS's canvas and
+output resolution to 1920x1080. OBS performs the scaling and final video encode
+on the Mac. Leave `wideSmoothMode`
 off for the lowest overhead and full Vivify compatibility. Turn it on to use
 the separate FOV and smoothing controls; 960x540 at 15 FPS is recommended on
 Quest 3S.
