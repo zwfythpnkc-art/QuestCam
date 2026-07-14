@@ -1,0 +1,12 @@
+build/
+extern/
+qpm.shared.json
+qpm_defines.cmake
+ndkpath.txt
+mod.json
+extern.cmake
+*.qmod
+compile_commands.json
+work/
+.DS_Store
+mod.schema.json

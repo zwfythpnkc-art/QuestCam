@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Lauriethefish/QuestPatcher.QMod/main/QuestPatcher.QMod/Resources/qmod.schema.json",
+  "_QPVersion": "0.1.1",
+  "name": "QuestCam",
+  "id": "questcam",
+  "author": "Daniel",
+  "version": "0.3.6",
+  "packageId": "com.beatgames.beatsaber",
+  "packageVersion": "1.40.8_7379",
+  "description": "Smooth spectator camera with a built-in OBS Browser Source video and audio stream for Quest.",
+  "dependencies": [],
+  "modFiles": ["${binary}"],
+
+  "libraryFiles": [],
+  "fileCopies": []
+}
